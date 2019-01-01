@@ -205,3 +205,24 @@ class Animator {
         }
     }
 }
+
+class Renderer {
+    animator : Animator = new Animator()
+    pbs : PlusBoxStep = new PlusBoxStep()
+
+    render(context : CanvasRenderingContext2D) {
+        this.pbs.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.pbs.startUpdating(() => [
+            this.animator.start(() => {
+                cb()
+                this.pbs.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        ])
+    }
+}
