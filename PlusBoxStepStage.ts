@@ -28,6 +28,45 @@ const updateScale : Function = (scale : number, dir : number, a : number, b : nu
     return mirrorValue(scale, a, b) * dir * scGap
 }
 
+const drawVerticalLine : Function = (context : CanvasRenderingContext2D, d : number, x : number, y : number) => {
+    context.save()
+    context.translate(x, y)
+    context.beginPath()
+    context.moveTo(0, 0)
+    context.lineTo(0, d)
+    context.stroke()
+    context.restore()
+}
+
+const drawPBSNode : Function = (context : CanvasRenderingContext2D, i : number, scale : number) => {
+    const gap : number = w / (nodes + 1)
+    const sc1 : number = divideScale(scale, 0, 2)
+    const sc2 : number = divideScale(scale, 1, 2)
+    const size : number = gap / 3
+    context.strokeStyle = color
+    context.lineCap = 'round'
+    context.lineWidth = Math.min(w, h) / strokeFactor
+    context.save()
+    context.translate(gap * (i + 1), h/2)
+    context.rotate(Math.PI/2 * sc2)
+    for (var j = 0; j < lines; j++) {
+        const sc : number = divideScale(sc1, j, lines)
+        context.save()
+        context.rotate(Math.PI/2 * j)
+        drawVerticalLine(context, size, 0, 0)
+        for (var k = 0; k < edges; k++) {
+            const sck : number = divideScale(sc, j, lines)
+            context.save()
+            context.translate(size, size)
+            context.rotate(Math.PI/2 * -k)
+            drawVerticalLine(context, -size * sck, 0, 0)
+            context.restore()
+        }
+        context.restore()
+    }
+    context.restore()
+}
+
 class PlusBoxStepStage {
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
